@@ -2,6 +2,10 @@ package BTree;
 
 import java.util.*;
 
+//region Exceptions
+import BTree.Exceptions.HowDidYouGetHereException;
+//endregion
+
 public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements Map<K,V>
 {
     private int _maxNodeSize;
@@ -70,12 +74,16 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V put(K key, V value)
     {
-        return _root.put(key, value);
+        var newValue = _root.put(key, value);
+        checkForSplit();
+        return newValue;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        forEach((key, value) -> put(key, value));
+        for(var node: m.entrySet()) {
+            put(node.getKey(), node.getValue());
+        }
     }
 
     @Override
@@ -132,5 +140,11 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public String toString() {
         return null;
+    }
+
+    private void checkForSplit() {
+        while (!_root.isRoot()) {
+            _root = _root.getParent();
+        }
     }
 }
