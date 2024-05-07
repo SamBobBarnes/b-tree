@@ -2,13 +2,9 @@ package BTree;
 
 import java.util.*;
 
-//region Exceptions
-import BTree.Exceptions.HowDidYouGetHereException;
-//endregion
-
+@SuppressWarnings("unchecked")
 public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements Map<K,V>
 {
-    private int _maxNodeSize;
     private Node<K,V> _root;
 
     public BTree() {
@@ -25,20 +21,19 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     }
 
     private void init(int maxNodeSize) {
-        _maxNodeSize = maxNodeSize;
-        _root = new Node<K,V>(_maxNodeSize);
+        _root = new Node<K,V>(maxNodeSize);
     }
 
     @Override
     public int size()
     {
-        return 0;
+        return _root.size();
     }
 
     @Override
     public boolean isEmpty()
     {
-        return false;
+        return _root.isEmpty();
     }
 
     @Override
@@ -68,7 +63,13 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V get(Object key)
     {
-        return null;
+        K k;
+        try {
+            k = (K) key;
+        } catch (ClassCastException e) {
+            return null;
+        }
+        return _root.get(k);
     }
 
     @Override
@@ -80,7 +81,8 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
+    public void putAll(Map<? extends K, ? extends V> m)
+    {
         for(var node: m.entrySet()) {
             put(node.getKey(), node.getValue());
         }
@@ -89,25 +91,39 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V remove(Object key)
     {
-        return null;
+        K k;
+        try {
+            k = (K) key;
+        } catch (ClassCastException e) {
+            return null;
+        }
+        return _root.remove(k);
     }
 
     @Override
     public boolean remove(Object key, Object value)
     {
-        return false;
+        K k;
+        V v;
+        try {
+            k = (K) key;
+            v = (V) value;
+        } catch (ClassCastException e) {
+            return false;
+        }
+        return _root.remove(k, v);
     }
 
     @Override
     public V replace(K key, V newValue)
     {
-        return null;
+        return _root.replace(key, newValue);
     }
 
     @Override
     public boolean replace(K key, V oldValue, V newValue)
     {
-        return false;
+        return _root.replace(key, oldValue, newValue);
     }
 
     @Override
@@ -129,7 +145,10 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     }
 
     @Override
-    public void clear() {}
+    public void clear()
+    {
+        _root.clear();
+    }
 
     @Override
     public Set<K> keySet()

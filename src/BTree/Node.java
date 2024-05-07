@@ -1,13 +1,6 @@
 package BTree;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-//region Exceptions
-import BTree.Exceptions.HowDidYouGetHereException;
-//endregion
+import java.util.*;
 
 class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
 {
@@ -20,9 +13,10 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
     private K _upperKey;
     private K _lowerKey;
 
+    //region Constructors
     private void init(int maxSize, Node<K,V> parent) {
-        _subNodes = new Vector<SubNode<K,V>>();
-        _children = new Vector<Node<K,V>>();
+        _subNodes = new ArrayList<SubNode<K,V>>();
+        _children = new ArrayList<Node<K,V>>();
         setParent(parent);
         _maxSize = maxSize;
         _isLeaf = true;
@@ -41,25 +35,16 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         init(maxSize, parent);
         _subNodes.add(new SubNode<K, V>(key, value));
     }
+    //endregion
 
-    public void setParent(Node<K,V> parent) {
-        _parent = parent;
-    }
-
-    public void setRoot(boolean isRoot) {
-        _isRoot = isRoot;
-    }
-
+    //region Public
+    //region Getters
     public boolean isRoot() {
         return _isRoot;
     }
 
     public boolean isLeaf() {
         return _isLeaf;
-    }
-
-    public void setLeaf(boolean isLeaf) {
-        _isLeaf = isLeaf;
     }
 
     public Node<K,V> getParent() {
@@ -70,11 +55,6 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         return _children.get(index);
     }
 
-    public void addChild(Node<K,V> child) {
-        _children.add(child);
-        _children.sort(new NodeComparator<K,V>());
-    }
-
     public K getUpperKey() {
         return _upperKey;
     }
@@ -83,8 +63,55 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         return _lowerKey;
     }
 
-    public V put(K key, V value)
-    {
+    public boolean isEmpty() {
+        return _subNodes.isEmpty();
+    }
+
+    public int size() {
+        var size = _subNodes.size();
+        if(_isLeaf) {
+            return size;
+        }
+        for(var child : _children) {
+            size += child.size();
+        }
+        return size;
+    }
+    //endregion
+
+    //region Setters
+    public void setParent(Node<K,V> parent) {
+        _parent = parent;
+    }
+
+    public void setRoot(boolean isRoot) {
+        _isRoot = isRoot;
+    }
+
+    public void setLeaf(boolean isLeaf) {
+        _isLeaf = isLeaf;
+    }
+    //endregion
+
+    public void addChild(Node<K,V> child) {
+        _children.add(child);
+        _children.sort(new NodeComparator<K,V>());
+    }
+
+    public V get(K key) {
+        var subNode = new SubNode<K,V>(key, null);
+        if(_subNodes.contains(subNode)) {
+            int index = _subNodes.indexOf(subNode);
+            return _subNodes.get(index).getValue();
+        }
+        if(_isLeaf) {
+            return null;
+        }
+        var childIndex = findChild(subNode);
+        return _children.get(childIndex).get(key);
+    }
+
+    public V put(K key, V value) {
         SubNode<K,V> subNode = new SubNode<K,V>(key, value);
         if(_subNodes.contains(subNode)) {
             int index = _subNodes.indexOf(subNode);
@@ -107,32 +134,6 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         return insert(subNode);
     }
 
-    private void put(SubNode<K,V> subNode) {
-        put(subNode.getKey(), subNode.getValue());
-    }
-
-    private void putAll(List<SubNode<K,V>> subNodes) {
-        for(var subNode : subNodes) {
-            put(subNode.getKey(), subNode.getValue());
-        }
-    }
-
-    private int findChild(SubNode<K,V> subNode)
-    {
-        if(_isLeaf) {
-            return -1;
-        }
-        for(int i = 0; i < _subNodes.size(); i++) {
-            if(_subNodes.get(i).compareTo(subNode) < 0) return i;
-        }
-        return _children.size() - 1;
-    }
-
-    private void setBoundaryKeys() {
-        _lowerKey = _subNodes.getFirst().getKey();
-        _upperKey = _subNodes.getLast().getKey();
-    }
-
     public V split(SubNode<K,V> subNode) {
         insert(subNode);
         var middleIndex = _subNodes.size() / 2;
@@ -153,11 +154,70 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         return subNode.getValue();
     }
 
-    private V insert(SubNode<K,V> subNode) {
-        _subNodes.add(subNode);
-        _subNodes.sort(new SubNodeComparator<K,V>());
-        setBoundaryKeys();
-        return subNode.getValue();
+    public void clear() {
+        _subNodes.clear();
+        _children.clear();
+        _upperKey = null;
+        _lowerKey = null;
+        _isLeaf = true;
+    }
+
+    public V remove(K key) {
+        var subNode = new SubNode<K,V>(key, null);
+        if(_subNodes.contains(subNode)) {
+            int index = _subNodes.indexOf(subNode);
+            return _subNodes.remove(index).getValue();
+        }
+        if(_isLeaf) {
+            return null;
+        }
+        var childIndex = findChild(subNode);
+        return _children.get(childIndex).remove(key);
+    }
+
+    public boolean remove(K key, V value) {
+        var subNode = new SubNode<K,V>(key, null);
+        if(_subNodes.contains(subNode)) {
+            int index = _subNodes.indexOf(subNode);
+            if(_subNodes.get(index).getValue().equals(value)) {
+                _subNodes.remove(index);
+                return true;
+            }
+        }
+        if(_isLeaf) {
+            return false;
+        }
+        var childIndex = findChild(subNode);
+        return _children.get(childIndex).remove(key, value);
+    }
+
+    public V replace(K key, V newValue) {
+        var subNode = new SubNode<K,V>(key, null);
+        if(_subNodes.contains(subNode)) {
+            int index = _subNodes.indexOf(subNode);
+            return _subNodes.get(index).setValue(newValue);
+        }
+        if(_isLeaf) {
+            return null;
+        }
+        var childIndex = findChild(subNode);
+        return _children.get(childIndex).replace(key, newValue);
+    }
+
+    public boolean replace(K key, V oldValue, V newValue) {
+        var subNode = new SubNode<K,V>(key, null);
+        if(_subNodes.contains(subNode)) {
+            int index = _subNodes.indexOf(subNode);
+            if(_subNodes.get(index).getValue().equals(oldValue)) {
+                _subNodes.get(index).setValue(newValue);
+                return true;
+            }
+        }
+        if(_isLeaf) {
+            return false;
+        }
+        var childIndex = findChild(subNode);
+        return _children.get(childIndex).replace(key, oldValue, newValue);
     }
 
     @Override
@@ -165,6 +225,41 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
     {
         return _lowerKey.compareTo(o.getLowerKey());
     }
+    //endregion
+
+    //region Private
+    private V insert(SubNode<K,V> subNode) {
+        _subNodes.add(subNode);
+        _subNodes.sort(new SubNodeComparator<K,V>());
+        setBoundaryKeys();
+        return subNode.getValue();
+    }
+
+    private void put(SubNode<K,V> subNode) {
+        put(subNode.getKey(), subNode.getValue());
+    }
+
+    private void putAll(List<SubNode<K,V>> subNodes) {
+        for(var subNode : subNodes) {
+            put(subNode.getKey(), subNode.getValue());
+        }
+    }
+
+    private int findChild(SubNode<K,V> subNode) {
+        if(_isLeaf) {
+            return -1;
+        }
+        for(int i = 0; i < _subNodes.size(); i++) {
+            if(_subNodes.get(i).compareTo(subNode) < 0) return i;
+        }
+        return _children.size() - 1;
+    }
+
+    private void setBoundaryKeys() {
+        _lowerKey = _subNodes.getFirst().getKey();
+        _upperKey = _subNodes.getLast().getKey();
+    }
+    //endregion
 }
 
 class NodeComparator<K extends Comparable<K>,V> implements Comparator<Node<K,V>>
