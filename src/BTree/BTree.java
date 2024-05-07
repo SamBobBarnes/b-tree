@@ -22,7 +22,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
 
     private void init(int maxNodeSize) {
         _maxNodeSize = maxNodeSize;
-        _root = new Node<K,V>();
+        _root = new Node<K,V>(_maxNodeSize);
     }
 
     @Override

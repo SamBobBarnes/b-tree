@@ -13,24 +13,24 @@ class Node<K extends Comparable<K>,V>
     private Node<K,V> _parent;
     private boolean _isRoot;
 
-    private void init(int maxSize) {
+    private void init(int maxSize, Node<K,V> parent) {
         _subNodes = new Vector<SubNode<K,V>>();
         _children = new Vector<Node<K,V>>();
+        setParent(parent);
         _maxSize = maxSize;
     }
 
     public Node(int maxSize) {
-        init(maxSize);
+        init(maxSize, null);
         setRoot(true);
     }
 
     public Node(int maxSize, Node<K,V> parent) {
-        init(maxSize);
-        _parent = parent;
+        init(maxSize, parent);
     }
 
-    public Node(int maxSize, K key, V value) {
-        init(maxSize);
+    public Node(int maxSize, Node<K,V> parent, K key, V value) {
+        init(maxSize, parent);
         _subNodes.add(new SubNode<K, V>(key, value));
     }
 
@@ -57,8 +57,9 @@ class Node<K extends Comparable<K>,V>
         return insert(subNode);
     }
 
-    public void split() {
+    public V split(SubNode<K,V> subNode) {
         // split at the middle and push center key up to parent
+        return null;
     }
 
     public V insert(SubNode<K,V> subNode) {
