@@ -137,11 +137,6 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
         return Set.of();
     }
 
-    @Override
-    public String toString() {
-        return null;
-    }
-
     private void checkForSplit() {
         while (!_root.isRoot()) {
             _root = _root.getParent();

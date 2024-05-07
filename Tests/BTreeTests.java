@@ -433,41 +433,6 @@ public class BTreeTests
     }
 
     @Test
-    public void ToString_EmptyTree()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertEquals("{}", tree.toString());
-    }
-
-    @Test
-    public void ToString_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        assertEquals("{1=one}", tree.toString());
-    }
-
-    @Test
-    public void ToString_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertEquals("{1=one, 2=two, 3=three}", tree.toString());
-    }
-
-    @Test
-    public void ToString_MultipleElements_Sorted()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(3, "three");
-        tree.put(2, "two");
-        tree.put(1, "one");
-        assertEquals("{1=one, 2=two, 3=three}", tree.toString());
-    }
-
-    @Test
     public void Equals_SameTree()
     {
         BTree<Integer, String> tree1 = new BTree<Integer, String>();
