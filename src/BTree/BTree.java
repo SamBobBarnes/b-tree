@@ -39,19 +39,22 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public Enumeration<K> keys()
     {
-        return null;
+        var keys = _root.getAllKeys();
+        keys.sort(new KeyComparator<K>());
+        return Collections.enumeration(keys);
     }
 
     @Override
     public Enumeration<V> elements()
     {
-        return null;
+        var values = values();
+        return Collections.enumeration(values);
     }
 
     @Override
     public Collection<V> values()
     {
-        return null;
+        return _root.getAllValues();
     }
 
     @Override
@@ -129,7 +132,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean containsKey(Object key)
     {
-        return false;
+        return _root.get((K) key) != null;
     }
 
     @Override

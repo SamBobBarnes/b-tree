@@ -77,6 +77,29 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         }
         return size;
     }
+
+    public Vector<K> getAllKeys() {
+        var keys = new Vector<K>();
+        for(var subNode : _subNodes) {
+            keys.add(subNode.getKey());
+        }
+        if(_isLeaf) {
+            return keys;
+        }
+        for(var child : _children) {
+            keys.addAll(Collections.list(child.getAllKeys().elements()));
+        }
+        return keys;
+    }
+
+    public Vector<V> getAllValues() {
+        var subNodes = getAllSubNodes();
+        var values = new Vector<V>();
+        for(var subNode : subNodes) {
+            values.add(subNode.getValue());
+        }
+        return values;
+    }
     //endregion
 
     //region Setters
@@ -259,6 +282,18 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         _lowerKey = _subNodes.getFirst().getKey();
         _upperKey = _subNodes.getLast().getKey();
     }
+
+    private Vector<SubNode<K,V>> getAllSubNodes() {
+        var subNodes = new Vector<>(_subNodes);
+        if(_isLeaf) {
+            return subNodes;
+        }
+        for(var child : _children) {
+            subNodes.addAll(Collections.list(child.getAllSubNodes().elements()));
+        }
+        subNodes.sort(new SubNodeComparator<K,V>());
+        return subNodes;
+    }
     //endregion
 }
 
@@ -266,6 +301,15 @@ class NodeComparator<K extends Comparable<K>,V> implements Comparator<Node<K,V>>
 {
     @Override
     public int compare(Node<K,V> o1, Node<K,V> o2)
+    {
+        return o1.compareTo(o2);
+    }
+}
+
+class KeyComparator<K extends Comparable<K>> implements Comparator<K>
+{
+    @Override
+    public int compare(K o1, K o2)
     {
         return o1.compareTo(o2);
     }
