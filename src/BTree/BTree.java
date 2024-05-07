@@ -106,15 +106,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean remove(Object key, Object value)
     {
-        K k;
-        V v;
-        try {
-            k = (K) key;
-            v = (V) value;
-        } catch (ClassCastException e) {
-            return false;
-        }
-        return _root.remove(k, v);
+        return _root.remove((K) key, (V) value);
     }
 
     @Override
