@@ -1,5 +1,6 @@
 package BTree;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -55,6 +56,17 @@ class Node<K extends Comparable<K>,V>
         }
         return insert(subNode);
     }
+
+    public void split() {
+        // split at the middle and push center key up to parent
+    }
+
+    public V insert(SubNode<K,V> subNode) {
+        // insert key into the correct position
+        _subNodes.add(subNode);
+        _subNodes.sort(new SubNodeComparator<K,V>());
+        return subNode.getValue();
+    }
 }
 
 class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Map.Entry<K,V>
@@ -92,5 +104,14 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
     public int compareTo(SubNode<K,V> o)
     {
         return _key.compareTo(o.getKey());
+    }
+}
+
+class SubNodeComparator<K extends Comparable<K>,V> implements Comparator<SubNode<K,V>>
+{
+    @Override
+    public int compare(SubNode<K,V> o1, SubNode<K,V> o2)
+    {
+        return o1.compareTo(o2);
     }
 }
