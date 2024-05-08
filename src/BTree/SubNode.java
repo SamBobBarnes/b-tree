@@ -64,6 +64,12 @@ class SubNode<K extends Comparable<K>, V> implements Comparable<SubNode<K, V>>, 
         }
         return false;
     }
+
+    @Override
+    public int hashCode()
+    {
+        return _key.hashCode() ^ _value.hashCode();
+    }
 }
 
 class SubNodeComparator<K extends Comparable<K>, V> implements Comparator<SubNode<K, V>>

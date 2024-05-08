@@ -49,7 +49,8 @@ public class BTree<K extends Comparable<K>, V> implements Map<K, V>
     @Override
     public Set<Entry<K, V>> entrySet()
     {
-        return Set.of();
+        var list = new ArrayList<>(_root.getAllSubNodes());
+        return new HashSet<Entry<K, V>>(list);
     }
 
     @Override

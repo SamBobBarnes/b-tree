@@ -696,7 +696,26 @@ public class BTreeTests
     //endregion
 
     //region entrySet()
+    @Test
+    public void entrySet_EmptyTree_ReturnsEmptySet()
+    {
+        assertTrue(new BTree<Integer, String>().entrySet().isEmpty());
+    }
 
+    @Test
+    public void entrySet_TreeWithElements_ReturnsCorrectEntries()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        var tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        var entries = tree.entrySet();
+        for (var node : nodes.entrySet()) {
+            assertTrue(entries.contains(node));
+        }
+    }
     //endregion
 
     //region get(Object key)
