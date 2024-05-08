@@ -3,7 +3,7 @@ package BTree;
 import java.util.Comparator;
 import java.util.Map;
 
-class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Map.Entry<K,V>
+class SubNode<K extends Comparable<K>, V> implements Comparable<SubNode<K, V>>, Map.Entry<K, V>
 {
     private final K _key;
     private V _value;
@@ -12,6 +12,11 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
     {
         _key = key;
         _value = value;
+    }
+
+    public SubNode<K, V> copy()
+    {
+        return new SubNode<K, V>(_key, _value);
     }
 
     @Override
@@ -35,7 +40,7 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
     }
 
     @Override
-    public int compareTo(SubNode<K,V> o)
+    public int compareTo(SubNode<K, V> o)
     {
         return _key.compareTo(o.getKey());
     }
@@ -44,8 +49,8 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
     @Override
     public boolean equals(Object o)
     {
-        if(o instanceof SubNode) {
-            return this.compareTo((SubNode<K,V>)o) == 0;
+        if (o instanceof SubNode) {
+            return this.compareTo((SubNode<K, V>) o) == 0;
         }
         return false;
     }
@@ -53,18 +58,18 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
     @SuppressWarnings("unchecked")
     public boolean equalsFull(Object o)
     {
-        if(o instanceof SubNode) {
-            SubNode<K,V> other = (SubNode<K,V>)o;
+        if (o instanceof SubNode) {
+            SubNode<K, V> other = (SubNode<K, V>) o;
             return _key.equals(other.getKey()) && _value.equals(other.getValue());
         }
         return false;
     }
 }
 
-class SubNodeComparator<K extends Comparable<K>,V> implements Comparator<SubNode<K,V>>
+class SubNodeComparator<K extends Comparable<K>, V> implements Comparator<SubNode<K, V>>
 {
     @Override
-    public int compare(SubNode<K,V> o1, SubNode<K,V> o2)
+    public int compare(SubNode<K, V> o1, SubNode<K, V> o2)
     {
         return o1.compareTo(o2);
     }

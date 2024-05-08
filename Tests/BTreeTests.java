@@ -1,486 +1,317 @@
+import com.flextrade.jfixture.*;
 import org.junit.jupiter.api.Test;
-import BTree.BTree;
-
-import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import BTree.BTree;
+import BTree.Tree;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 public class BTreeTests
 {
-    @Test
-    public void Constructor_EmptyTree()
+    private List<Tuple<Integer, String>> generateList(int length)
     {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertTrue(tree.isEmpty());
+        var fixture = new JFixture();
+        List<Tuple<Integer, String>> list = new Vector<Tuple<Integer, String>>();
+        for (int i = 0; i < length; i++) {
+            list.add(new Tuple<Integer, String>(fixture.create(Integer.class), fixture.create(String.class)));
+        }
+        return list;
+    }
+
+    // constructors
+
+    //region B-Tree stack
+    @Test
+    public void Organization_CorrectSingleNode()
+    {
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                values = new ArrayList<Integer>(List.of(1, 2, 3, 4));
+            }
+        };
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        bTree.put(1, "one");
+        bTree.put(2, "two");
+        bTree.put(3, "three");
+        bTree.put(4, "four");
+        assertEquals(tree, bTree.toTree());
     }
 
     @Test
-    public void Put_SingleElement()
+    public void Organization_CorrectSingleSplit()
     {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        assertEquals(1, tree.size());
+        var list = generateList(5);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+        }
+
+        list.sort(new TupleComparator<Integer, String>());
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(list.get(0).getKey(), list.get(1).getKey()));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(list.get(3).getKey(), list.get(4).getKey()));
+                            }
+                        }
+                                                               ));
+                values = new ArrayList<Integer>(List.of(list.get(2).getKey()));
+            }
+        };
+        assertEquals(tree, bTree.toTree());
     }
 
     @Test
-    public void Put_MultipleElements()
+    public void Organization_CorrectDoubleSplit()
     {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertEquals(3, tree.size());
+        var list = new ArrayList<Tuple<Integer, String>>(List.of(
+                new Tuple<Integer, String>(10, "ten"),
+                new Tuple<Integer, String>(2, "two"),
+                new Tuple<Integer, String>(4, "four"),
+                new Tuple<Integer, String>(9, "nine"),
+                new Tuple<Integer, String>(5, "five"),
+                new Tuple<Integer, String>(3, "three"),
+                new Tuple<Integer, String>(6, "six"),
+                new Tuple<Integer, String>(7, "seven"),
+                new Tuple<Integer, String>(8, "eight"),
+                new Tuple<Integer, String>(1, "one")
+                                                                ));
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+            bTree.size();
+        }
+
+        list.sort(new TupleComparator<Integer, String>());
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                values = new ArrayList<Integer>(List.of(5, 8));
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(1, 2, 3, 4));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(6, 7));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(9, 10));
+                            }
+                        }
+                                                               ));
+            }
+        };
+        var result = bTree.toTree();
+        assertEquals(tree, result);
     }
 
     @Test
-    public void Get_SingleElement()
+    public void Organization_Depth2()
     {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        assertEquals("one", tree.get(1));
+        var list = new ArrayList<Tuple<Integer, String>>(List.of(
+                new Tuple<Integer, String>(10, "ten"),
+                new Tuple<Integer, String>(2, "two"),
+                new Tuple<Integer, String>(4, "four"),
+                new Tuple<Integer, String>(9, "nine"),
+                new Tuple<Integer, String>(20, "ten"),
+                new Tuple<Integer, String>(22, "two"),
+                new Tuple<Integer, String>(24, "four"),
+                new Tuple<Integer, String>(5, "five"),
+                new Tuple<Integer, String>(3, "three"),
+                new Tuple<Integer, String>(6, "six"),
+                new Tuple<Integer, String>(28, "eight"),
+                new Tuple<Integer, String>(21, "one"),
+                new Tuple<Integer, String>(7, "seven"),
+                new Tuple<Integer, String>(8, "eight"),
+                new Tuple<Integer, String>(29, "nine"),
+                new Tuple<Integer, String>(25, "five"),
+                new Tuple<Integer, String>(23, "three"),
+                new Tuple<Integer, String>(26, "six"),
+                new Tuple<Integer, String>(27, "seven"),
+                new Tuple<Integer, String>(30, "ten")
+                                                                ));
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+            bTree.size();
+        }
+
+        list.sort(new TupleComparator<Integer, String>());
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                values = new ArrayList<Integer>(List.of(22));
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(4, 9));
+                                children = new ArrayList<Tree<Integer>>(List.of(
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(2, 3));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(5, 6, 7, 8));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(10, 20, 21));
+                                            }
+                                        }
+                                                                               ));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(25, 28));
+                                children = new ArrayList<Tree<Integer>>(List.of(
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(23, 24));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(26, 27));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(29, 30));
+                                            }
+                                        }
+                                                                               ));
+                            }
+                        }
+                                                               ));
+            }
+        };
+        var result = bTree.toTree();
+        assertEquals(tree, result);
     }
 
-    @Test
-    public void Get_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertEquals("one", tree.get(1));
-        assertEquals("two", tree.get(2));
-        assertEquals("three", tree.get(3));
-    }
+    //endregion
 
+    //region size()
     @Test
-    public void Remove_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.remove(1);
-        assertTrue(tree.isEmpty());
-    }
-
-    @Test
-    public void Remove_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        tree.remove(1);
-        tree.remove(2);
-        tree.remove(3);
-        assertTrue(tree.isEmpty());
-    }
-
-    @Test
-    public void Contains_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        assertTrue(tree.containsValue("one"));
-    }
-
-    @Test
-    public void Contains_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertTrue(tree.containsValue("one"));
-        assertTrue(tree.containsValue("two"));
-        assertTrue(tree.containsValue("three"));
-    }
-
-    @Test
-    public void Replace_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.replace(1, "two");
-        assertEquals("two", tree.get(1));
-    }
-
-    @Test
-    public void Replace_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        tree.replace(1, "four");
-        tree.replace(2, "five");
-        tree.replace(3, "six");
-        assertEquals("four", tree.get(1));
-        assertEquals("five", tree.get(2));
-        assertEquals("six", tree.get(3));
-    }
-
-    @Test
-    public void Keys_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        var keys = Collections.list(tree.keys()).toArray(new Integer[0]);
-        var expected = new Integer[] {1};
-        assertArrayEquals(expected, keys);
-    }
-
-    @Test
-    public void Keys_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        var keys = Collections.list(tree.keys()).toArray(new Integer[0]);
-        var expected = new Integer[] {1, 2, 3};
-        assertArrayEquals(expected, keys);
-    }
-
-    @Test
-    public void Values_SingleElement()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        var values = Collections.list(tree.elements()).toArray(new String[0]);
-        var expected = new String[] {"one"};
-        assertArrayEquals(expected, values);
-    }
-
-    @Test
-    public void Values_MultipleElements()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        var values = Collections.list(tree.elements()).toArray(new String[0]);
-        var expected = new String[] {"one", "two", "three"};
-        assertArrayEquals(expected, values);
-    }
-
-    @Test
-    public void PutAll()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        var map = Map.of(1, "one", 2, "two", 3, "three");
-        tree.putAll(map);
-        assertEquals(3, tree.size());
-        assertEquals("one", tree.get(1));
-        assertEquals("two", tree.get(2));
-        assertEquals("three", tree.get(3));
-    }
-
-    @Test
-    public void Remove_KeyValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertTrue(tree.remove(1, "one"));
-        assertTrue(tree.remove(2, "two"));
-        assertTrue(tree.remove(3, "three"));
-        assertTrue(tree.isEmpty());
-    }
-
-    @Test
-    public void Remove_KeyValue_False()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertFalse(tree.remove(1, "two"));
-        assertFalse(tree.remove(2, "three"));
-        assertFalse(tree.remove(3, "one"));
-        assertEquals(3, tree.size());
-    }
-
-    @Test
-    public void Clear()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        tree.clear();
-        assertTrue(tree.isEmpty());
-    }
-
-    @Test
-    public void ContainsValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertTrue(tree.containsValue("one"));
-        assertTrue(tree.containsValue("two"));
-        assertTrue(tree.containsValue("three"));
-    }
-
-    @Test
-    public void ContainsValue_False()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertFalse(tree.containsValue("four"));
-    }
-
-    @Test
-    public void ContainsKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertTrue(tree.containsKey(1));
-        assertTrue(tree.containsKey(2));
-        assertTrue(tree.containsKey(3));
-    }
-
-    @Test
-    public void ContainsKey_False()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        assertFalse(tree.containsKey(4));
-    }
-
-    @Test
-    public void Values()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.put(2, "two");
-        tree.put(3, "three");
-        var values = tree.values().toArray(new String[0]);
-        var expected = new String[] {"one", "two", "three"};
-        assertArrayEquals(expected, values);
-    }
-
-    @Test
-    public void Size()
+    public void size_EmptyTree_ReturnsZero()
     {
         BTree<Integer, String> tree = new BTree<Integer, String>();
         assertEquals(0, tree.size());
+    }
+
+    @Test
+    public void size_TreeWithOneElement_ReturnsOne()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
         tree.put(1, "one");
         assertEquals(1, tree.size());
-        tree.put(2, "two");
-        assertEquals(2, tree.size());
-        tree.put(3, "three");
-        assertEquals(3, tree.size());
-        tree.remove(1);
-        assertEquals(2, tree.size());
-        tree.remove(2);
-        assertEquals(1, tree.size());
-        tree.remove(3);
-        assertEquals(0, tree.size());
     }
 
     @Test
-    public void IsEmpty()
+    public void size_TreeWithMultipleElements_SingleSplit_ReturnsCorrectSize()
     {
+        var list = generateList(4);
         BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertTrue(tree.isEmpty());
-        tree.put(1, "one");
-        assertFalse(tree.isEmpty());
-        tree.remove(1);
-        assertTrue(tree.isEmpty());
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertEquals(4, tree.size());
     }
 
     @Test
-    public void Put_NullKey()
+    public void size_TreeWithMultipleElements_DoubleSplit_ReturnsCorrectSize()
     {
+        var list = generateList(10);
         BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.put(null, "one"));
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertEquals(10, tree.size());
     }
+    //endregion
 
-    @Test
-    public void Put_NullValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.put(1, null));
-    }
+    //    public boolean isEmpty()
 
-    @Test
-    public void Get_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.get(null));
-    }
+    //    public Collection<V> values()
 
-    @Test
-    public void Remove_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.remove(null));
-    }
+    //    public Set<Map.Entry<K, V>> entrySet()
 
-    @Test
-    public void Remove_KeyValue_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.remove(null, "one"));
-    }
+    //    public V get(Object key)
 
-    @Test
-    public void Remove_KeyValue_NullValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.remove(1, null));
-    }
+    //    public V put(K key, V value)
 
-    @Test
-    public void Replace_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.replace(null, "one"));
-    }
+    //    public void putAll(Map<? extends K, ? extends V> m)
 
-    @Test
-    public void Replace_NullValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.replace(1, null));
-    }
+    //    public V remove(Object key)
 
-    @Test
-    public void Contains_NullValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.containsValue(null));
-    }
+    //    public boolean remove(Object key, Object value)
 
-    @Test
-    public void ContainsKey_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.containsKey(null));
-    }
+    //    public V replace(K key, V newValue)
 
-    @Test
-    public void PutAll_NullMap()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.putAll(null));
-    }
+    //    public boolean replace(K key, V oldValue, V newValue)
 
-    @Test
-    public void ContainsValue_NullValue()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, () -> tree.containsValue(null));
-    }
+    //    public boolean containsKey(Object key)
 
-    @Test
-    public void Values_EmptyTree()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertEquals(tree.values().size(), 0);
-    }
+    //    public boolean containsValue(Object value)
 
+    //    public boolean equals(Object o)
 
-    @Test
-    public void Keys_EmptyTree()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertEquals(Collections.list(tree.keys()).size(), 0);
-    }
+    //    public void clear()
 
-    @Test
-    public void Equals_Null()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertNotEquals(null, tree);
-    }
+    //    public Set<K> keySet()
 
-    @Test
-    public void Clear_EmptyTree()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        tree.put(1, "one");
-        tree.clear();
-        assertTrue(tree.isEmpty());
-    }
-
-    @Test
-    public void Equals_SameTree()
-    {
-        BTree<Integer, String> tree1 = new BTree<Integer, String>();
-        BTree<Integer, String> tree2 = new BTree<Integer, String>();
-        assertEquals(tree1, tree2);
-    }
-
-    @Test
-    public void Equals_SameElements()
-    {
-        BTree<Integer, String> tree1 = new BTree<Integer, String>();
-        tree1.put(1, "one");
-        tree1.put(2, "two");
-        tree1.put(3, "three");
-        BTree<Integer, String> tree2 = new BTree<Integer, String>();
-        tree2.put(1, "one");
-        tree2.put(2, "two");
-        tree2.put(3, "three");
-        assertEquals(tree1, tree2);
-    }
-
-    @Test
-    public void Equals_DifferentElements()
-    {
-        BTree<Integer, String> tree1 = new BTree<Integer, String>();
-        tree1.put(1, "one");
-        tree1.put(2, "two");
-        tree1.put(3, "three");
-        BTree<Integer, String> tree2 = new BTree<Integer, String>();
-        tree2.put(1, "one");
-        tree2.put(2, "two");
-        tree2.put(4, "four");
-        assertNotEquals(tree1, tree2);
-    }
-
-    @Test
-    public void Equals_DifferentKeys()
-    {
-        BTree<Integer, String> tree1 = new BTree<Integer, String>();
-        tree1.put(1, "one");
-        tree1.put(2, "two");
-        tree1.put(3, "three");
-        BTree<Integer, String> tree2 = new BTree<Integer, String>();
-        tree2.put(1, "one");
-        tree2.put(3, "three");
-        tree2.put(2, "two");
-        assertNotEquals(tree1, tree2);
-    }
-
-    @Test
-    public void Equals_DifferentValues()
-    {
-        BTree<Integer, String> tree1 = new BTree<Integer, String>();
-        tree1.put(1, "one");
-        tree1.put(2, "two");
-        tree1.put(3, "three");
-        BTree<Integer, String> tree2 = new BTree<Integer, String>();
-        tree2.put(1, "one");
-        tree2.put(2, "two");
-        tree2.put(3, "four");
-        assertNotEquals(tree1, tree2);
-    }
-
-    @Test
-    public void Equals_DifferentTypes()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertNotEquals(tree, new Object());
-    }
 }

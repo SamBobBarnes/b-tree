@@ -25,5 +25,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="b-tree" />
+    <orderEntry type="library" name="flextrade.jfixture" level="project" />
+    <orderEntry type="library" name="flextrade.jfixture.scala" level="project" />
   </component>
 </module>

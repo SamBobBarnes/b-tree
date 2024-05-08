@@ -3,25 +3,29 @@ package BTree;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
-public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements Map<K,V>
+public class BTree<K extends Comparable<K>, V> implements Map<K, V>
 {
-    private Node<K,V> _root;
+    private Node<K, V> _root;
 
-    public BTree() {
+    public BTree()
+    {
         init(4);
     }
 
-    public BTree(int maxNodeSize, Map<K,V> map) {
+    public BTree(int maxNodeSize, Map<K, V> map)
+    {
         init(maxNodeSize);
         putAll(map);
     }
 
-    public BTree(int maxNodeSize) {
+    public BTree(int maxNodeSize)
+    {
         init(maxNodeSize);
     }
 
-    private void init(int maxNodeSize) {
-        _root = new Node<K,V>(maxNodeSize);
+    private void init(int maxNodeSize)
+    {
+        _root = new Node<K, V>(maxNodeSize);
     }
 
     @Override
@@ -34,21 +38,6 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     public boolean isEmpty()
     {
         return _root.isEmpty();
-    }
-
-    @Override
-    public Enumeration<K> keys()
-    {
-        var keys = _root.getAllKeys();
-        keys.sort(new KeyComparator<K>());
-        return Collections.enumeration(keys);
-    }
-
-    @Override
-    public Enumeration<V> elements()
-    {
-        var values = values();
-        return Collections.enumeration(values);
     }
 
     @Override
@@ -66,14 +55,15 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V get(Object key)
     {
-        if(key == null) {
+        if (key == null) {
             throw new NullPointerException();
         }
 
         K k;
         try {
             k = (K) key;
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             return null;
         }
         return _root.get(k);
@@ -82,7 +72,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V put(K key, V value)
     {
-        if(key == null || value == null) {
+        if (key == null || value == null) {
             throw new NullPointerException();
         }
 
@@ -94,7 +84,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public void putAll(Map<? extends K, ? extends V> m)
     {
-        for(var node: m.entrySet()) {
+        for (var node : m.entrySet()) {
             put(node.getKey(), node.getValue());
         }
     }
@@ -102,14 +92,15 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V remove(Object key)
     {
-        if(key == null) {
+        if (key == null) {
             throw new NullPointerException();
         }
 
         K k;
         try {
             k = (K) key;
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             return null;
         }
         return _root.remove(k);
@@ -118,7 +109,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean remove(Object key, Object value)
     {
-        if(key == null || value == null) {
+        if (key == null || value == null) {
             throw new NullPointerException();
         }
 
@@ -128,7 +119,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public V replace(K key, V newValue)
     {
-        if(key == null || newValue == null) {
+        if (key == null || newValue == null) {
             throw new NullPointerException();
         }
 
@@ -144,7 +135,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean containsKey(Object key)
     {
-        if(key == null) {
+        if (key == null) {
             throw new NullPointerException();
         }
 
@@ -154,7 +145,7 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean containsValue(Object value)
     {
-        if(value == null) {
+        if (value == null) {
             throw new NullPointerException();
         }
 
@@ -164,7 +155,10 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public boolean equals(Object o)
     {
-        return _root.equals(o);
+        if (o instanceof BTree) {
+            return _root.equals(((BTree<K, V>) o)._root);
+        }
+        return false;
     }
 
     @Override
@@ -176,10 +170,16 @@ public class BTree<K extends Comparable<K>,V> extends Dictionary<K,V> implements
     @Override
     public Set<K> keySet()
     {
-        return new HashSet<K>(Collections.list(keys()));
+        return new HashSet<K>(_root.getAllKeys());
     }
 
-    private void checkForSplit() {
+    public Tree<K> toTree()
+    {
+        return _root.toTree(0);
+    }
+
+    private void checkForSplit()
+    {
         while (!_root.isRoot()) {
             _root = _root.getParent();
         }
