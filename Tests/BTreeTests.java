@@ -537,15 +537,13 @@ public class BTreeTests
         var result = bTree.toTree();
         assertEquals(tree, result);
     }
-
     //endregion
 
     //region size()
     @Test
     public void size_EmptyTree_ReturnsZero()
     {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertEquals(0, tree.size());
+        assertEquals(0, new BTree<Integer, String>().size());
     }
 
     @Test
