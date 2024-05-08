@@ -10,6 +10,8 @@ import java.util.*;
 
 public class BTreeTests
 {
+    private final int DEFAULT_MAX_SIZE = 4;
+
     private List<Tuple<Integer, String>> generateList(int length)
     {
         long seed = 12345; // You can change this seed value
@@ -249,7 +251,6 @@ public class BTreeTests
         BTree<Integer, String> bTree = new BTree<Integer, String>();
         for (var tuple : list) {
             bTree.put(tuple.getKey(), tuple.getValue());
-            bTree.size();
         }
 
         list.sort(new TupleComparator<Integer, String>());
@@ -577,34 +578,90 @@ public class BTreeTests
     }
     //endregion
 
-    //    public boolean isEmpty()
+    //region isEmpty()
+    @Test
+    public void isEmpty_EmptyTree_ReturnsTrue()
+    {
+        assertTrue(new BTree<Integer, String>().isEmpty());
+    }
 
-    //    public Collection<V> values()
+    @Test
+    public void isEmpty_TreeWithElements_ReturnsFalse()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        assertFalse(new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes).isEmpty());
+    }
+    //endregion
 
-    //    public Set<Map.Entry<K, V>> entrySet()
+    //region values()
 
-    //    public V get(Object key)
 
-    //    public V put(K key, V value)
+    //endregion
 
-    //    public void putAll(Map<? extends K, ? extends V> m)
+    //region entrySet()
 
-    //    public V remove(Object key)
 
-    //    public boolean remove(Object key, Object value)
+    //endregion
 
-    //    public V replace(K key, V newValue)
+    //region get(Object key)
 
-    //    public boolean replace(K key, V oldValue, V newValue)
 
-    //    public boolean containsKey(Object key)
+    //endregion
 
-    //    public boolean containsValue(Object value)
+    //region put(K key, V value)
 
-    //    public boolean equals(Object o)
 
-    //    public void clear()
+    //endregion
 
-    //    public Set<K> keySet()
+    //region putAll(Map<? extends K, ? extends V> m)
+
+
+    //endregion
+
+    //region remove(Object key)
+
+
+    //endregion
+
+    //region remove(Object key, Object value)
+
+
+    //endregion
+
+    //region replace(K key, V newValue)
+
+
+    //endregion
+
+    //region replace(K key, V oldValue, V newValue)
+
+
+    //endregion
+
+    //region containsKey(Object key)
+
+
+    //endregion
+
+    //region containsValue(Object value)
+
+
+    //endregion
+
+    //region equals(Object o)
+
+
+    //endregion
+
+    //region clear()
+
+
+    //endregion
+
+    //region keySet()
+
+
+    //endregion
 
 }
