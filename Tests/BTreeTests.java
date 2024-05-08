@@ -12,7 +12,7 @@ public class BTreeTests
 {
     private final int DEFAULT_MAX_SIZE = 4;
 
-    private List<Tuple<Integer, String>> generateList(int length)
+    private List<Tuple<Integer, String>> generateList(int length, boolean shuffle)
     {
         long seed = 12345; // You can change this seed value
         Random random = new Random(seed);
@@ -20,8 +20,13 @@ public class BTreeTests
         for (int i = 0; i < length; i++) {
             list.add(new Tuple<Integer, String>(i, Integer.toString(i)));
         }
-        Collections.shuffle(list, random);
+        if (shuffle) Collections.shuffle(list, random);
         return list;
+    }
+
+    private List<Tuple<Integer, String>> generateList(int length)
+    {
+        return generateList(length, false);
     }
 
     // constructors
@@ -48,7 +53,7 @@ public class BTreeTests
     @Test
     public void Organization_CorrectSingleSplit()
     {
-        var list = generateList(5);
+        var list = generateList(5, false);
 
         BTree<Integer, String> bTree = new BTree<Integer, String>();
         for (var tuple : list) {
@@ -246,7 +251,7 @@ public class BTreeTests
     @Test
     public void Organization_Depth3()
     {
-        var list = generateList(100);
+        var list = generateList(100, true);
 
         BTree<Integer, String> bTree = new BTree<Integer, String>();
         for (var tuple : list) {
@@ -719,7 +724,44 @@ public class BTreeTests
     //endregion
 
     //region get(Object key)
+    @Test
+    public void get_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().get(null));
+    }
 
+    @Test
+    public void get_WrongObjectType_ThrowsClassCastException()
+    {
+        assertThrows(ClassCastException.class, () -> new BTree<Integer, String>().get("some string"));
+    }
+
+    @Test
+    public void get_KeyNotInTree_ReturnsNull()
+    {
+        assertNull(new BTree<Integer, String>().get(1));
+    }
+
+    @Test
+    public void get_KeyInTree_ReturnsCorrectValue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertEquals("one", tree.get(1));
+    }
+
+    @Test
+    public void get_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsCorrectValues()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertEquals(list.get(0).getValue(), tree.get(list.get(0).getKey()));
+        assertEquals(list.get(2).getValue(), tree.get(list.get(2).getKey()));
+        assertEquals(list.get(4).getValue(), tree.get(list.get(4).getKey()));
+    }
     //endregion
 
     //region put(K key, V value)
