@@ -6,19 +6,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import BTree.BTree;
 import BTree.Tree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class BTreeTests
 {
     private List<Tuple<Integer, String>> generateList(int length)
     {
-        var fixture = new JFixture();
+        long seed = 12345; // You can change this seed value
+        Random random = new Random(seed);
         List<Tuple<Integer, String>> list = new Vector<Tuple<Integer, String>>();
         for (int i = 0; i < length; i++) {
-            list.add(new Tuple<Integer, String>(fixture.create(Integer.class), fixture.create(String.class)));
+            list.add(new Tuple<Integer, String>(i, Integer.toString(i)));
         }
+        Collections.shuffle(list, random);
         return list;
     }
 
@@ -99,7 +99,6 @@ public class BTreeTests
         BTree<Integer, String> bTree = new BTree<Integer, String>();
         for (var tuple : list) {
             bTree.put(tuple.getKey(), tuple.getValue());
-            bTree.size();
         }
 
         list.sort(new TupleComparator<Integer, String>());
@@ -166,7 +165,6 @@ public class BTreeTests
         BTree<Integer, String> bTree = new BTree<Integer, String>();
         for (var tuple : list) {
             bTree.put(tuple.getKey(), tuple.getValue());
-            bTree.size();
         }
 
         list.sort(new TupleComparator<Integer, String>());
@@ -231,6 +229,303 @@ public class BTreeTests
                                             {
                                                 depth = 2;
                                                 values = new ArrayList<Integer>(List.of(29, 30));
+                                            }
+                                        }
+                                                                               ));
+                            }
+                        }
+                                                               ));
+            }
+        };
+        var result = bTree.toTree();
+        assertEquals(tree, result);
+    }
+
+    @Test
+    public void Organization_Depth3()
+    {
+        var list = generateList(100);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+            bTree.size();
+        }
+
+        list.sort(new TupleComparator<Integer, String>());
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                values = new ArrayList<Integer>(List.of(47));
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(11, 21, 33));
+                                children = new ArrayList<Tree<Integer>>(List.of(
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(3, 8));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(0, 1, 2));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(4, 5, 6, 7));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(9, 10));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(15, 18));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(12, 13, 14));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(16, 17));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(19, 20));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(24, 27, 30));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(22, 23));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(25, 26));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(28, 29));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(31, 32));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(38, 43));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(34, 35, 36, 37));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(39, 40, 41, 42));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(44, 45, 46));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        }
+                                                                               ));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(63, 76, 87));
+                                children = new ArrayList<Tree<Integer>>(List.of(
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(50, 55, 59));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(48, 49));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(51, 52, 53, 54));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(56, 57, 58));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(60, 61, 62));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(67, 72));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(64, 65, 66));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(68, 69, 70, 71));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(73, 74, 75));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(80, 83));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(77, 78, 79));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(81, 82));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(84, 85, 86));
+                                                            }
+                                                        }
+                                                                                               ));
+                                            }
+                                        },
+                                        new Tree<Integer>()
+                                        {
+                                            {
+                                                depth = 2;
+                                                values = new ArrayList<Integer>(List.of(91, 96));
+                                                children = new ArrayList<Tree<Integer>>(List.of(
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(88, 89, 90));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(92, 93, 94, 95));
+                                                            }
+                                                        },
+                                                        new Tree<Integer>()
+                                                        {
+                                                            {
+                                                                depth = 3;
+                                                                values = new ArrayList<Integer>(List.of(97, 98, 99));
+                                                            }
+                                                        }
+                                                                                               ));
                                             }
                                         }
                                                                                ));

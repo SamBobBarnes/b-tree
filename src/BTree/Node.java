@@ -199,6 +199,14 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
         rightNode.putAll(rightSubNodes);
         _parent.addChild(rightNode);
         _parent.put(middleSubNode);
+        if (!_children.isEmpty()) {
+            rightNode.setLeaf(false);
+            rightNode._children.addAll(_children.subList(middleIndex + 1, _children.size()));
+            _children.removeAll(rightNode._children);
+            for (var child : rightNode._children) {
+                child.setParent(rightNode);
+            }
+        }
         setBoundaryKeys();
         return subNode.getValue();
     }
@@ -341,7 +349,9 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
         }
 
         if (onSplit) {
-            return insert(subNode);
+            if (_subNodes.size() < _maxSize)
+                return insert(subNode);
+            return split(subNode);
         }
 
         if (_subNodes.contains(subNode)) {
