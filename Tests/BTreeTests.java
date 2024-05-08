@@ -595,72 +595,155 @@ public class BTreeTests
     //endregion
 
     //region values()
+    @Test
+    public void values_EmptyTree_ReturnsEmptyCollection()
+    {
+        assertTrue(new BTree<Integer, String>().values().isEmpty());
+    }
 
+    @Test
+    public void values_TreeWithElements_ReturnsCorrectValues()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        var tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        var values = tree.values();
+        assertTrue(values.contains("one"));
+        assertTrue(values.contains("two"));
+        assertTrue(values.contains("three"));
+        assertTrue(values.contains("four"));
+    }
 
+    @Test
+    public void values_TreeWithElements_ReturnsSorted()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(4, "four");
+        nodes.put(3, "three");
+        nodes.put(2, "two");
+        nodes.put(1, "one");
+        var tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        var values = tree.values();
+        var iterator = values.iterator();
+        assertEquals("one", iterator.next());
+        assertEquals("two", iterator.next());
+        assertEquals("three", iterator.next());
+        assertEquals("four", iterator.next());
+    }
+
+    @Test
+    public void values_TreeWithMultipleElements_SingleSplit_ReturnsCorrectValues()
+    {
+        var list = generateList(4);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var values = tree.values();
+        for (var tuple : list) {
+            assertTrue(values.contains(tuple.getValue()));
+        }
+    }
+
+    @Test
+    public void values_TreeWithMultipleElements_SingleSplit_ReturnsSorted()
+    {
+        var list = generateList(4);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var values = tree.values();
+        list.sort(new TupleComparator<Integer, String>());
+        var iterator = values.iterator();
+        for (var tuple : list) {
+            assertEquals(tuple.getValue(), iterator.next());
+        }
+    }
+
+    @Test
+    public void values_TreeWithMultipleElements_DoubleSplit_ReturnsCorrectValues()
+    {
+        var list = generateList(10);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var values = tree.values();
+        for (var tuple : list) {
+            assertTrue(values.contains(tuple.getValue()));
+        }
+    }
+
+    @Test
+    public void values_TreeWithMultipleElements_DoubleSplit_ReturnsSorted()
+    {
+        var list = generateList(10);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var values = tree.values();
+        list.sort(new TupleComparator<Integer, String>());
+        var iterator = values.iterator();
+        for (var tuple : list) {
+            assertEquals(tuple.getValue(), iterator.next());
+        }
+    }
     //endregion
 
     //region entrySet()
-
 
     //endregion
 
     //region get(Object key)
 
-
     //endregion
 
     //region put(K key, V value)
-
 
     //endregion
 
     //region putAll(Map<? extends K, ? extends V> m)
 
-
     //endregion
 
     //region remove(Object key)
-
 
     //endregion
 
     //region remove(Object key, Object value)
 
-
     //endregion
 
     //region replace(K key, V newValue)
-
 
     //endregion
 
     //region replace(K key, V oldValue, V newValue)
 
-
     //endregion
 
     //region containsKey(Object key)
-
 
     //endregion
 
     //region containsValue(Object value)
 
-
     //endregion
 
     //region equals(Object o)
-
 
     //endregion
 
     //region clear()
 
-
     //endregion
 
     //region keySet()
-
 
     //endregion
 
