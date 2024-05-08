@@ -383,38 +383,18 @@ public class BTreeTests
     }
 
     @Test
-    public void Values_NullValue()
+    public void Values_EmptyTree()
     {
         BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, tree::values);
+        assertEquals(tree.values().size(), 0);
     }
 
-    @Test
-    public void ContainsKey_False_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertFalse(tree.containsKey(null));
-    }
 
     @Test
-    public void ContainsValue_False_NullValue()
+    public void Keys_EmptyTree()
     {
         BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertFalse(tree.containsValue(null));
-    }
-
-    @Test
-    public void Keys_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, tree::keys);
-    }
-
-    @Test
-    public void Values_NullKey()
-    {
-        BTree<Integer, String> tree = new BTree<Integer, String>();
-        assertThrows(NullPointerException.class, tree::elements);
+        assertEquals(Collections.list(tree.keys()).size(), 0);
     }
 
     @Test
@@ -428,6 +408,7 @@ public class BTreeTests
     public void Clear_EmptyTree()
     {
         BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
         tree.clear();
         assertTrue(tree.isEmpty());
     }

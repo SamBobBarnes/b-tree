@@ -49,6 +49,16 @@ class SubNode<K extends Comparable<K>,V> implements Comparable<SubNode<K,V>>, Ma
         }
         return false;
     }
+
+    @SuppressWarnings("unchecked")
+    public boolean equalsFull(Object o)
+    {
+        if(o instanceof SubNode) {
+            SubNode<K,V> other = (SubNode<K,V>)o;
+            return _key.equals(other.getKey()) && _value.equals(other.getValue());
+        }
+        return false;
+    }
 }
 
 class SubNodeComparator<K extends Comparable<K>,V> implements Comparator<SubNode<K,V>>

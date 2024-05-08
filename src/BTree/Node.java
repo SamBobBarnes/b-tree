@@ -134,6 +134,23 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
         return _children.get(childIndex).get(key);
     }
 
+    public boolean containsValue(V value) {
+        for(var subNode : _subNodes) {
+            if(subNode.getValue().equals(value)) {
+                return true;
+            }
+        }
+        if(_isLeaf) {
+            return false;
+        }
+        for(var child : _children) {
+            if(child.containsValue(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public V put(K key, V value) {
         SubNode<K,V> subNode = new SubNode<K,V>(key, value);
         if(_subNodes.contains(subNode)) {
@@ -247,6 +264,34 @@ class Node<K extends Comparable<K>,V> implements Comparable<Node<K,V>>
     public int compareTo(Node<K, V> o)
     {
         return _lowerKey.compareTo(o.getLowerKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(Object o)
+    {
+        if(!(o instanceof Node)) {
+            return false;
+        }
+
+        Node<K,V> other = (Node<K,V>)o;
+        if(_subNodes.size() != other._subNodes.size()) {
+            return false;
+        }
+        for(int i = 0; i < _subNodes.size(); i++) {
+            if(!_subNodes.get(i).equalsFull(other._subNodes.get(i))) {
+                return false;
+            }
+        }
+        if(_children.size() != other._children.size()) {
+            return false;
+        }
+        for(int i = 0; i < _children.size(); i++) {
+            if(!_children.get(i).equals(other._children.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
     //endregion
 
