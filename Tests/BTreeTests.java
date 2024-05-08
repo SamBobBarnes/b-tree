@@ -731,9 +731,9 @@ public class BTreeTests
     }
 
     @Test
-    public void get_WrongObjectType_ThrowsClassCastException()
+    public void get_WrongObjectType_ReturnsNull()
     {
-        assertThrows(ClassCastException.class, () -> new BTree<Integer, String>().get("some string"));
+        assertNull(new BTree<Integer, String>().get("some string"));
     }
 
     @Test
