@@ -29,7 +29,9 @@ public class BTreeTests
         return generateList(length, false);
     }
 
-    // constructors
+    //region constructors
+
+    //endregion
 
     //region B-Tree stack
     @Test
@@ -543,6 +545,180 @@ public class BTreeTests
         var result = bTree.toTree();
         assertEquals(tree, result);
     }
+
+    //region Removal
+    @Test
+    public void Removal_CorrectSingleNode()
+    {
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                values = new ArrayList<Integer>(List.of(2, 3, 4));
+            }
+        };
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        bTree.put(1, "one");
+        bTree.put(2, "two");
+        bTree.put(3, "three");
+        bTree.put(4, "four");
+        bTree.remove(1);
+        assertEquals(tree, bTree.toTree());
+    }
+
+    @Test
+    public void Removal_CorrectSingleSplit_MergeUp()
+    {
+        var list = generateList(5, false);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+        }
+
+        list.sort(new TupleComparator<Integer, String>());
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                children = new ArrayList<Tree<Integer>>();
+                values = new ArrayList<Integer>(List.of(1,2,4,5));
+            }
+        };
+        bTree.remove(list.get(2).getKey());
+        assertEquals(tree, bTree.toTree());
+    }
+
+    @Test
+    public void Removal_CorrectDoubleSplit_TakeFromSiblingLeft()
+    {
+        var list = generateList(10, true);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+        }
+        bTree.remove(4);
+        bTree.remove(5);
+
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(0,1));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(3,6));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(8,9));
+                            }
+                        }
+                                                               ));
+                values = new ArrayList<Integer>(List.of(2,7));
+            }
+        };
+        assertEquals(tree, bTree.toTree());
+    }
+
+    @Test
+    public void Removal_CorrectDoubleSplit_TakeFromSiblingRight()
+    {
+        var list = generateList(10, true);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+        }
+
+        bTree.remove(1);
+        bTree.remove(2);
+
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(0,3));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(5,6));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(8,9));
+                            }
+                        }
+                                                               ));
+                values = new ArrayList<Integer>(List.of(4,7));
+            }
+        };
+        assertEquals(tree, bTree.toTree());
+    }
+
+    @Test
+    public void Removal_CorrectDoubleSplit_MergeSibling()
+    {
+        var list = generateList(10, true);
+
+        BTree<Integer, String> bTree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            bTree.put(tuple.getKey(), tuple.getValue());
+        }
+        bTree.remove(1);
+        bTree.remove(2);
+        bTree.remove(3);
+
+        var tree = new Tree<Integer>()
+        {
+            {
+                depth = 0;
+                children = new ArrayList<Tree<Integer>>(List.of(
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(0,4,5,6));
+                            }
+                        },
+                        new Tree<Integer>()
+                        {
+                            {
+                                depth = 1;
+                                values = new ArrayList<Integer>(List.of(8, 9));
+                            }
+                        }
+                                                               ));
+                values = new ArrayList<Integer>(List.of(7));
+            }
+        };
+        assertEquals(tree, bTree.toTree());
+    }
+    //endregion
     //endregion
 
     //region size()
@@ -901,8 +1077,6 @@ public class BTreeTests
         assertEquals(list.getFirst().getValue(), tree.remove(list.getFirst().getKey()));
         assertNull(tree.get(list.getFirst().getKey()));
     }
-
-    //TODO: Test node merge on remove
     //endregion
 
     //region remove(Object key, Object value)
