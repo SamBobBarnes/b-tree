@@ -958,7 +958,36 @@ public class BTreeTests
     //endregion
 
     //region containsValue(Object value)
+    @Test
+    public void containsValue_NullValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().containsValue(null));
+    }
 
+    @Test
+    public void containsValue_ValueNotInTree_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().containsValue("one"));
+    }
+
+    @Test
+    public void containsValue_ValueInTree_ReturnsTrue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertTrue(tree.containsValue("one"));
+    }
+
+    @Test
+    public void containsValue_TreeWithMultipleElements_SingleSplit_ValueInFirstNode_ReturnsTrue()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertTrue(tree.containsValue(list.getFirst().getValue()));
+    }
     //endregion
 
     //region equals(Object o)
