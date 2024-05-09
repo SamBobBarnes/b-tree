@@ -930,7 +930,18 @@ public class BTreeTests
     //endregion
 
     //region clear()
-
+    @Test
+    public void clear_TreeWithElements_RemovesAllNodes()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        BTree<Integer, String> tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        tree.clear();
+        assertTrue(tree.isEmpty());
+    }
     //endregion
 
     //region keySet()
