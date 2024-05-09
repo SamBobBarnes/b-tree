@@ -249,19 +249,13 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
 
     public boolean remove(K key, V value)
     {
-        var subNode = new SubNode<K, V>(key, null);
-        if (_subNodes.contains(subNode)) {
-            int index = _subNodes.indexOf(subNode);
-            if (_subNodes.get(index).getValue().equals(value)) {
-                _subNodes.remove(index);
-                return true;
-            }
-        }
-        if (_isLeaf) {
+        var old = get(key);
+        if (old == null || !old.equals(value)) {
             return false;
         }
-        var childIndex = findChild(subNode);
-        return _children.get(childIndex).remove(key, value);
+
+        remove(key);
+        return true;
     }
 
     public V replace(K key, V newValue)
