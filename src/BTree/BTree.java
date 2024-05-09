@@ -119,6 +119,9 @@ public class BTree<K extends Comparable<K>, V> implements Map<K, V>
     @Override
     public boolean replace(K key, V oldValue, V newValue)
     {
+        if (key == null || oldValue == null || newValue == null) {
+            throw new NullPointerException();
+        }
         return _root.replace(key, oldValue, newValue);
     }
 

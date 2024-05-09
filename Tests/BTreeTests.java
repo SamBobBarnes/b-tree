@@ -1018,7 +1018,66 @@ public class BTreeTests
     //endregion
 
     //region replace(K key, V oldValue, V newValue)
+    @Test
+    public void replaceExact_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().replace(null, "old one", "new one"));
+    }
 
+    @Test
+    public void replaceExact_NullOldValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().replace(1, null, "new one"));
+    }
+
+    @Test
+    public void replaceExact_NullNewValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().replace(1, "old one", null));
+    }
+
+    @Test
+    public void replaceExact_KeyNotInTree_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().replace(1, "old one", "new one"));
+    }
+
+    @Test
+    public void replaceExact_OldValueNotInTree_ReturnsFalse()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertFalse(tree.replace(1, "old two", "new one"));
+    }
+
+    @Test
+    public void replaceExact_KeyInTree_OldValueInTree_ReturnsTrue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertTrue(tree.replace(1, "one", "new one"));
+    }
+
+    @Test
+    public void replaceExact_KeyInTree_OldValueInTree_ReplacesValue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.replace(1, "one", "new one");
+        assertEquals("new one", tree.get(1));
+    }
+
+    @Test
+    public void replaceExact_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsCorrectValues()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertTrue(tree.replace(list.getFirst().getKey(), list.getFirst().getValue(), "new one"));
+        assertEquals("new one", tree.get(list.getFirst().getKey()));
+    }
     //endregion
 
     //region containsKey(Object key)
