@@ -918,7 +918,43 @@ public class BTreeTests
     //endregion
 
     //region containsKey(Object key)
+    @Test
+    public void containsKey_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().containsKey(null));
+    }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
+    @Test
+    public void containsKey_WrongObjectType_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().containsKey("some string"));
+    }
+
+    @Test
+    public void containsKey_KeyNotInTree_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().containsKey(1));
+    }
+
+    @Test
+    public void containsKey_KeyInTree_ReturnsTrue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertTrue(tree.containsKey(1));
+    }
+
+    @Test
+    public void containsKey_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsTrue()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertTrue(tree.containsKey(list.getFirst().getKey()));
+    }
     //endregion
 
     //region containsValue(Object value)
