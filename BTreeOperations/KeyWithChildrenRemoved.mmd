@@ -7,10 +7,11 @@ A -- Yes --> B{Is node underflowed}
 A -- No --> C[Take from left child] --> D{Does child underflow?}
 D -- Yes --> Underflow
 D -- No --> End
+B -- Yes --> Underflow
 B -- No --> E{Is child leaf?}
 E -- Yes --> End
 E -- No --> Start
-B -- Yes --> Underflow
+
 
 End[End]
 Underflow[Underflow Process]

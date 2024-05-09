@@ -2,20 +2,30 @@
 title: Removal
 ---
 flowchart
-    Start(Start) --> SearchKey{Search Key in B-Tree}
+    Start --> SearchKey
     SearchKey -->|Found| RemoveKey[Remove Key]
-    SearchKey -->|Not Found| End{End}
-    RemoveKey -->|Key in Leaf Node| RemoveKeyLeaf[Remove Key from Leaf Node]
-    RemoveKey -->|Key in Internal Node| RemoveKeyInternal[Remove Key from Internal Node]
-    RemoveKeyLeaf -->|Underflow| HandleUnderflowLeaf[Handle Underflow in Leaf Node]
+    SearchKey -->|Not Found| End
+
+    RemoveKey -->|Key in Leaf Node| RemoveKeyLeaf
+    RemoveKey -->|Key in Internal Node| ReplaceFromCenterOfChildren
+    RemoveKey -->|Key in Root Node| RemoveKeyRoot
+
+    ReplaceFromCenterOfChildren --> |ChildUnderflow| HandleUnderflow --> End
+    ReplaceFromCenterOfChildren -->|No Underflow| End
+
+    RemoveKeyRoot -->|No| ReplaceFromCenterOfChildren
+    RemoveKeyRoot -->|Yes| End
+
+    HandleUnderflow[Handle Underflow]
+
     RemoveKeyLeaf -->|No Underflow| End
-    HandleUnderflowLeaf -->|Sibling has Extra Key| BorrowKeyLeaf[Borrow Key from Sibling]
-    HandleUnderflowLeaf -->|Sibling has No Extra Key| MergeNodesLeaf[Merge Nodes]
-    BorrowKeyLeaf --> End
-    MergeNodesLeaf --> End
-    RemoveKeyInternal -->|Underflow| HandleUnderflowInternal[Handle Underflow in Internal Node]
-    RemoveKeyInternal -->|No Underflow| End
-    HandleUnderflowInternal -->|Sibling has Extra Key| BorrowKeyInternal[Borrow Key from Sibling]
-    HandleUnderflowInternal -->|Sibling has No Extra Key| MergeNodesInternal[Merge Nodes]
-    BorrowKeyInternal --> End
-    MergeNodesInternal --> End
+    RemoveKeyLeaf -->|Underflow| HandleUnderflow
+    
+
+    Start(Start)
+    SearchKey{Search Key in B-Tree}
+    RemoveKey[Remove Key]
+    RemoveKeyLeaf[Remove Key from Leaf Node]
+    RemoveKeyRoot{Is Root Leaf?}
+    ReplaceFromCenterOfChildren[ReplaceFromCenterOfChildren]
+    End{End}
