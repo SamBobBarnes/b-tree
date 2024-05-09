@@ -1,0 +1,14 @@
+---
+title: Underflow
+---
+flowchart
+    A[Start: Node Underflow]
+    -->B{Is it root node?}
+    B-- Yes -->C[Take key from left child]
+    C --> H{Is child underflowed?}
+    H -- Yes --> D
+    B-- No -->D{Does sibling have more than t keys?}
+    D-- Yes -->E[Transfer key from sibling 'Prioritize Left']
+    D-- No -->F[Merge nodes 'Prioritize Left']
+    E-->G[End: Underflow handled]
+    F-->G
