@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
 {
     private int _maxSize;
+    private int _minNodeSize;
     private List<SubNode<K, V>> _subNodes;
     private List<Node<K, V>> _children;
     private Node<K, V> _parent;
@@ -21,6 +22,7 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
         _children = new ArrayList<Node<K, V>>();
         setParent(parent);
         _maxSize = maxSize;
+        _minNodeSize = (int) Math.ceil(maxSize / 2.0);
         _isLeaf = true;
         setRoot(false);
     }
@@ -65,6 +67,16 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
         return _children.get(index);
     }
 
+    public List<Node<K, V>> getChildren()
+    {
+        return _children;
+    }
+
+    public List<SubNode<K, V>> getSubNodes()
+    {
+        return _subNodes;
+    }
+
     public K getUpperKey()
     {
         return _upperKey;
@@ -90,6 +102,11 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
             size += child.size();
         }
         return size;
+    }
+
+    public int ownSize()
+    {
+        return _subNodes.size();
     }
 
     public Vector<K> getAllKeys()
@@ -235,10 +252,31 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
 
     public V remove(K key)
     {
+        V oldValue;
         var subNode = new SubNode<K, V>(key, null);
         if (_subNodes.contains(subNode)) {
             int index = _subNodes.indexOf(subNode);
-            return _subNodes.remove(index).getValue();
+            oldValue = _subNodes.remove(index).getValue();
+            if (_subNodes.isEmpty() && _isRoot) {
+                if (sizeOfChildren() <= _maxSize && !_children.isEmpty()) {
+                    // promote children
+                    for (var child : _children) {
+                        _subNodes.addAll(child.getSubNodes());
+                    }
+                    _subNodes.sort(new SubNodeComparator<K, V>());
+                    setBoundaryKeys();
+
+                    var newChildren = new ArrayList<Node<K, V>>();
+                    for (var child : _children) {
+                        newChildren.addAll(child.getChildren());
+                    }
+                    newChildren.sort(new NodeComparator<K, V>());
+                    _children = newChildren;
+                }
+                else {
+
+                }
+            }
         }
         if (_isLeaf) {
             return null;
@@ -403,6 +441,15 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
     {
         _lowerKey = _subNodes.getFirst().getKey();
         _upperKey = _subNodes.getLast().getKey();
+    }
+
+    private int sizeOfChildren()
+    {
+        int size = 0;
+        for (var child : _children) {
+            size += child.size();
+        }
+        return size;
     }
     //endregion
 }

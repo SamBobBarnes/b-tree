@@ -34,8 +34,9 @@ public class BTreeTests
     //endregion
 
     //region B-Tree stack
+    //region Push
     @Test
-    public void Organization_CorrectSingleNode()
+    public void Organization_Push_CorrectSingleNode()
     {
         var tree = new Tree<Integer>()
         {
@@ -53,7 +54,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Organization_CorrectSingleSplit()
+    public void Organization_Push_CorrectSingleSplit()
     {
         var list = generateList(5, false);
 
@@ -90,7 +91,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Organization_CorrectDoubleSplit()
+    public void Organization_Push_CorrectDoubleSplit()
     {
         var list = new ArrayList<Tuple<Integer, String>>(List.of(
                 new Tuple<Integer, String>(10, "ten"),
@@ -146,7 +147,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Organization_Depth2()
+    public void Organization_Push_Depth2()
     {
         var list = new ArrayList<Tuple<Integer, String>>(List.of(
                 new Tuple<Integer, String>(10, "ten"),
@@ -251,7 +252,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Organization_Depth3()
+    public void Organization_Push_Depth3()
     {
         var list = generateList(100, true);
 
@@ -545,10 +546,11 @@ public class BTreeTests
         var result = bTree.toTree();
         assertEquals(tree, result);
     }
+    //endregion
 
     //region Removal
     @Test
-    public void Removal_CorrectSingleNode()
+    public void Organization_Removal_CorrectSingleNode()
     {
         var tree = new Tree<Integer>()
         {
@@ -567,7 +569,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Removal_CorrectSingleSplit_MergeUp()
+    public void Organization_Removal_CorrectSingleSplit_MergeUp()
     {
         var list = generateList(5, false);
 
@@ -582,7 +584,7 @@ public class BTreeTests
             {
                 depth = 0;
                 children = new ArrayList<Tree<Integer>>();
-                values = new ArrayList<Integer>(List.of(1,2,4,5));
+                values = new ArrayList<Integer>(List.of(1, 2, 4, 5));
             }
         };
         bTree.remove(list.get(2).getKey());
@@ -590,7 +592,7 @@ public class BTreeTests
     }
 
     @Test
-    public void Removal_CorrectDoubleSplit_TakeFromSiblingLeft()
+    public void Organization_Removal_CorrectDoubleSplit_TakeFromSiblingLeft()
     {
         var list = generateList(10, true);
 
@@ -610,32 +612,32 @@ public class BTreeTests
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(0,1));
+                                values = new ArrayList<Integer>(List.of(0, 1));
                             }
                         },
                         new Tree<Integer>()
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(3,6));
+                                values = new ArrayList<Integer>(List.of(3, 6));
                             }
                         },
                         new Tree<Integer>()
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(8,9));
+                                values = new ArrayList<Integer>(List.of(8, 9));
                             }
                         }
                                                                ));
-                values = new ArrayList<Integer>(List.of(2,7));
+                values = new ArrayList<Integer>(List.of(2, 7));
             }
         };
         assertEquals(tree, bTree.toTree());
     }
 
     @Test
-    public void Removal_CorrectDoubleSplit_TakeFromSiblingRight()
+    public void Organization_Removal_CorrectDoubleSplit_TakeFromSiblingRight()
     {
         var list = generateList(10, true);
 
@@ -656,32 +658,32 @@ public class BTreeTests
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(0,3));
+                                values = new ArrayList<Integer>(List.of(0, 3));
                             }
                         },
                         new Tree<Integer>()
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(5,6));
+                                values = new ArrayList<Integer>(List.of(5, 6));
                             }
                         },
                         new Tree<Integer>()
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(8,9));
+                                values = new ArrayList<Integer>(List.of(8, 9));
                             }
                         }
                                                                ));
-                values = new ArrayList<Integer>(List.of(4,7));
+                values = new ArrayList<Integer>(List.of(4, 7));
             }
         };
         assertEquals(tree, bTree.toTree());
     }
 
     @Test
-    public void Removal_CorrectDoubleSplit_MergeSibling()
+    public void Organization_Removal_CorrectDoubleSplit_MergeSibling()
     {
         var list = generateList(10, true);
 
@@ -702,7 +704,7 @@ public class BTreeTests
                         {
                             {
                                 depth = 1;
-                                values = new ArrayList<Integer>(List.of(0,4,5,6));
+                                values = new ArrayList<Integer>(List.of(0, 4, 5, 6));
                             }
                         },
                         new Tree<Integer>()
