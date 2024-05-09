@@ -996,7 +996,73 @@ public class BTreeTests
     //endregion
 
     //region keySet()
+    @Test
+    public void keySet_EmptyTree_ReturnsEmptySet()
+    {
+        assertTrue(new BTree<Integer, String>().keySet().isEmpty());
+    }
 
+    @Test
+    public void keySet_TreeWithElements_ReturnsCorrectKeys()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        BTree<Integer, String> tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        var keys = tree.keySet();
+        for (var node : nodes.entrySet()) {
+            assertTrue(keys.contains(node.getKey()));
+        }
+    }
+
+    @Test
+    public void keySet_TreeWithElements_ReturnsSorted()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(4, "four");
+        nodes.put(3, "three");
+        nodes.put(2, "two");
+        nodes.put(1, "one");
+        BTree<Integer, String> tree = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        var keys = tree.keySet();
+        var iterator = keys.iterator();
+        assertEquals(1, iterator.next());
+        assertEquals(2, iterator.next());
+        assertEquals(3, iterator.next());
+        assertEquals(4, iterator.next());
+    }
+
+    @Test
+    public void keySet_TreeWithMultipleElements_SingleSplit_ReturnsCorrectKeys()
+    {
+        var list = generateList(4);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var keys = tree.keySet();
+        for (var tuple : list) {
+            assertTrue(keys.contains(tuple.getKey()));
+        }
+    }
+
+    @Test
+    public void keySet_TreeWithMultipleElements_SingleSplit_ReturnsSorted()
+    {
+        var list = generateList(4);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        var keys = tree.keySet();
+        list.sort(new TupleComparator<Integer, String>());
+        var iterator = keys.iterator();
+        for (var tuple : list) {
+            assertEquals(tuple.getKey(), iterator.next());
+        }
+    }
     //endregion
 
 }
