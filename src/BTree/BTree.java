@@ -92,13 +92,7 @@ public class BTree<K extends Comparable<K>, V> implements Map<K, V>
             throw new NullPointerException();
         }
 
-        K k;
-        try {
-            k = (K) key;
-        }
-        catch (ClassCastException e) {
-            return null;
-        }
+        K k = (K) key;
         return _root.remove(k);
     }
 

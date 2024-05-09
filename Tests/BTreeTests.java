@@ -730,6 +730,7 @@ public class BTreeTests
         assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().get(null));
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Test
     public void get_WrongObjectType_ReturnsNull()
     {
@@ -765,15 +766,143 @@ public class BTreeTests
     //endregion
 
     //region put(K key, V value)
+    @Test
+    public void put_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().put(null, "one"));
+    }
 
+    @Test
+    public void put_NullValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().put(1, null));
+    }
+
+    @Test
+    public void put_KeyValuePair_AddsNodeToTree()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertEquals("one", tree.get(1));
+    }
+
+    @Test
+    public void put_KeyValuePair_UpdatesNodeInTree()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.put(1, "new one");
+        assertEquals("new one", tree.get(1));
+    }
+
+    @Test
+    public void put_KeyValuePair_SingleSplit_AddsNodeToTree()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        tree.put(6, "six");
+        assertEquals("six", tree.get(6));
+    }
+
+    @Test
+    public void put_KeyValuePair_DoubleSplit_AddsNodeToTree()
+    {
+        var list = generateList(10);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        tree.put(11, "eleven");
+        assertEquals("eleven", tree.get(11));
+    }
     //endregion
 
     //region putAll(Map<? extends K, ? extends V> m)
+    @SuppressWarnings("DataFlowIssue")
+    @Test
+    public void putAll_NullMap_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().putAll(null));
+    }
 
+    @Test
+    public void putAll_EmptyMap_DoesNothing()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.putAll(new HashMap<Integer, String>());
+        assertEquals("one", tree.get(1));
+    }
+
+    @Test
+    public void putAll_MapWithElements_AddsAllNodesToTree()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.putAll(nodes);
+        for (var node : nodes.entrySet()) {
+            assertEquals(node.getValue(), tree.get(node.getKey()));
+        }
+    }
     //endregion
 
     //region remove(Object key)
+    @Test
+    public void remove_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().remove(null));
+    }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
+    @Test
+    public void remove_WrongObjectType_ReturnsNull()
+    {
+        assertNull(new BTree<Integer, String>().remove("some string"));
+    }
+
+    @Test
+    public void remove_KeyNotInTree_ReturnsNull()
+    {
+        assertNull(new BTree<Integer, String>().remove(1));
+    }
+
+    @Test
+    public void remove_KeyInTree_ReturnsCorrectValue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertEquals("one", tree.remove(1));
+    }
+
+    @Test
+    public void remove_KeyInTree_RemovesNodeFromTree()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.remove(1);
+        assertNull(tree.get(1));
+    }
+
+    @Test
+    public void remove_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsCorrectValues()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertEquals(list.getFirst().getValue(), tree.remove(list.getFirst().getKey()));
+        assertNull(tree.get(list.getFirst().getKey()));
+    }
+
+    //TODO: Test node merge on remove
     //endregion
 
     //region remove(Object key, Object value)
