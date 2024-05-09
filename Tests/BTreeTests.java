@@ -910,7 +910,51 @@ public class BTreeTests
     //endregion
 
     //region replace(K key, V newValue)
+    @Test
+    public void replace_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().replace(null, "one"));
+    }
 
+    @Test
+    public void replace_NullValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().replace(1, null));
+    }
+
+    @Test
+    public void replace_KeyNotInTree_ReturnsNull()
+    {
+        assertNull(new BTree<Integer, String>().replace(1, "one"));
+    }
+
+    @Test
+    public void replace_KeyInTree_ReturnsOldValue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertEquals("one", tree.replace(1, "new one"));
+    }
+
+    @Test
+    public void replace_KeyInTree_ReplacesValue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.replace(1, "new one");
+        assertEquals("new one", tree.get(1));
+    }
+
+    @Test
+    public void replace_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsCorrectValues()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertEquals(list.getFirst().getValue(), tree.replace(list.getFirst().getKey(), "new one"));
+    }
     //endregion
 
     //region replace(K key, V oldValue, V newValue)
