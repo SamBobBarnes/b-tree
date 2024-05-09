@@ -146,6 +146,9 @@ public class BTree<K extends Comparable<K>, V> implements Map<K, V>
     public boolean equals(Object o)
     {
         if (o instanceof BTree) {
+            if (o == this) {
+                return true;
+            }
             return _root.equals(((BTree<K, V>) o)._root);
         }
         return false;

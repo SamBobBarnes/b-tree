@@ -926,7 +926,58 @@ public class BTreeTests
     //endregion
 
     //region equals(Object o)
+    @Test
+    public void equals_NullObject_ReturnsFalse()
+    {
+        assertNotEquals(null, new BTree<Integer, String>());
+    }
 
+    @Test
+    public void equals_SameObject_ReturnsTrue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        assertEquals(tree, tree);
+    }
+
+    @Test
+    public void equals_DifferentReferences_ReturnsTrue()
+    {
+        assertEquals(new BTree<Integer, String>(), new BTree<Integer, String>());
+    }
+
+    @Test
+    public void equals_DifferentTrees_ReturnsFalse()
+    {
+        var nodes1 = new HashMap<Integer, String>();
+        nodes1.put(1, "one");
+        nodes1.put(2, "two");
+        nodes1.put(3, "three");
+        nodes1.put(4, "four");
+        var tree1 = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes1);
+
+        var nodes2 = new HashMap<Integer, String>();
+        nodes2.put(1, "one");
+        nodes2.put(2, "two");
+        nodes2.put(3, "three");
+        nodes2.put(4, "four");
+        nodes2.put(5, "five");
+        var tree2 = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes2);
+
+        assertNotEquals(tree1, tree2);
+    }
+
+    @Test
+    public void equals_SameTrees_ReturnsTrue()
+    {
+        var nodes = new HashMap<Integer, String>();
+        nodes.put(1, "one");
+        nodes.put(2, "two");
+        nodes.put(3, "three");
+        nodes.put(4, "four");
+        BTree<Integer, String> tree1 = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        BTree<Integer, String> tree2 = new BTree<Integer, String>(DEFAULT_MAX_SIZE, nodes);
+        assertEquals(tree1, tree2);
+    }
     //endregion
 
     //region clear()
