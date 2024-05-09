@@ -906,7 +906,67 @@ public class BTreeTests
     //endregion
 
     //region remove(Object key, Object value)
+    @Test
+    public void removeExact_NullKey_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().remove(null, "one"));
+    }
 
+    @Test
+    public void removeExact_NullValue_ThrowsNullPointerException()
+    {
+        assertThrows(NullPointerException.class, () -> new BTree<Integer, String>().remove(1, null));
+    }
+
+    @SuppressWarnings("SuspiciousMethodCalls")
+    @Test
+    public void removeExact_WrongObjectType_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().remove("some string", "one"));
+    }
+
+    @Test
+    public void removeExact_KeyNotInTree_ReturnsFalse()
+    {
+        assertFalse(new BTree<Integer, String>().remove(1, "one"));
+    }
+
+    @Test
+    public void removeExact_ValueNotInTree_ReturnsFalse()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertFalse(tree.remove(1, "two"));
+    }
+
+    @Test
+    public void removeExact_KeyInTree_ValueInTree_ReturnsTrue()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        assertTrue(tree.remove(1, "one"));
+    }
+
+    @Test
+    public void removeExact_KeyInTree_ValueInTree_RemovesNodeFromTree()
+    {
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        tree.put(1, "one");
+        tree.remove(1, "one");
+        assertNull(tree.get(1));
+    }
+
+    @Test
+    public void removeExact_TreeWithMultipleElements_SingleSplit_KeyInFirstNode_ReturnsCorrectValues()
+    {
+        var list = generateList(5);
+        BTree<Integer, String> tree = new BTree<Integer, String>();
+        for (var tuple : list) {
+            tree.put(tuple.getKey(), tuple.getValue());
+        }
+        assertTrue(tree.remove(list.getFirst().getKey(), list.getFirst().getValue()));
+        assertNull(tree.get(list.getFirst().getKey()));
+    }
     //endregion
 
     //region replace(K key, V newValue)
