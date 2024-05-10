@@ -269,12 +269,13 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
         }
         var subNodeKey = new SubNode<K, V>(key, null);
         if (_isLeaf) {
-            var oldValue = _subNodes.remove(subNodeKey);
+            var index = _subNodes.indexOf(subNodeKey);
+            var old = _subNodes.remove(index);
             setBoundaryKeys();
             if (isUnderflow()) {
                 underflow();
             }
-            return subNodeKey;
+            return old;
         }
         if (_subNodes.contains(subNodeKey)) {
             var index = _subNodes.indexOf(subNodeKey);
@@ -338,9 +339,44 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
 
     public void underflow()
     {
-        //TODO: Implement underflow
         if (_isRoot) {
             // Take key from left child
+            if (isEmpty()) return;
+            var leftChild = _children.getFirst();
+            if (leftChild.willNotUnderflowIfRemoved()) {
+                var key = leftChild.remove(leftChild.getUpperKey());
+                insert(key);
+                if (leftChild.isUnderflow()) {
+                    leftChild.underflow();
+                }
+                return;
+            }
+            // Take key from right child
+            var rightChild = _children.getLast();
+            if (rightChild.willNotUnderflowIfRemoved()) {
+                var key = rightChild.remove(rightChild.getLowerKey());
+                insert(key);
+                if (rightChild.isUnderflow()) {
+                    rightChild.underflow();
+                }
+                return;
+            }
+            // merge children and remove root
+            var leftSubNodes = leftChild.getAllSubNodes();
+            var rightSubNodes = rightChild.getAllSubNodes();
+            var leftChildren = leftChild.getChildren();
+            var rightChildren = rightChild.getChildren();
+
+            _subNodes.addAll(leftSubNodes);
+            _subNodes.addAll(rightSubNodes);
+
+            _children.addAll(leftChildren);
+            _children.addAll(rightChildren);
+
+            _children.remove(leftChild);
+            _children.remove(rightChild);
+            setBoundaryKeys();
+
             return;
         }
         // check siblings
@@ -393,10 +429,6 @@ class Node<K extends Comparable<K>, V> implements Comparable<Node<K, V>>
             if (_parent.isUnderflow()) {
                 _parent.underflow();
             }
-        }
-        else {
-            // Merge with parent key
-
         }
     }
 
