@@ -93,7 +93,7 @@ public class BTree<K extends Comparable<K>, V> implements Map<K, V>
         }
 
         K k = (K) key;
-        return _root.remove(k);
+        return _root.remove(k).getValue();
     }
 
     @Override
